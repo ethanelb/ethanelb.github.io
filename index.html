@@ -1361,9 +1361,23 @@ async function _fetchAndRender(token){
   const s=sortEl?sortEl.value:'date_desc';
 
   let query=sb.from('products').select('*',{count:'exact'});
+  // Build RPC params for sum_weight_filtered
+  const rpcParams={};
+  const safe=q?q.replace(/[%_]/g,'\\$&'):null;
+  if(safe)rpcParams.q=safe;
+  if(types.size>0)rpcParams.quality_in=[...types];
+  if(gn)rpcParams.gsm_min=gn;
+  if(gx)rpcParams.gsm_max=gx;
+  if(lmin)rpcParams.width_min=lmin;
+  if(lmax)rpcParams.width_max=lmax;
+  if(mandrins.size>0)rpcParams.noyau_in=[...mandrins];
+  if(couleurs.size>0)rpcParams.color_in=[...couleurs];
+  if(formats.size>0)rpcParams.format_in=[...formats];
+  if(origines.size===1)rpcParams.origine_prefix=[...origines][0];
+  if(pn)rpcParams.price_min=pn;
+  if(px)rpcParams.price_max=px;
   function _applyFilters(q2){
-    const safe2=q?q.replace(/[%_]/g,'\\$&'):null;
-    if(safe2)q2=q2.or(`quality.ilike.%${safe2}%,color.ilike.%${safe2}%,details.ilike.%${safe2}%,ref.ilike.%${safe2}%`);
+    if(safe)q2=q2.or(`quality.ilike.%${safe}%,color.ilike.%${safe}%,details.ilike.%${safe}%,ref.ilike.%${safe}%`);
     if(types.size>0)q2=q2.in('quality',[...types]);
     if(gn)q2=q2.gte('gsm',gn);
     if(gx)q2=q2.lte('gsm',gx);
@@ -1391,10 +1405,15 @@ async function _fetchAndRender(token){
 
   const ctrl=new AbortController();
   const _to=setTimeout(()=>ctrl.abort(),15000);
-  let data,error,_exactCount=null;
+  let data,error,_exactCount=null,_totalWeightKg=0;
   try{
     if(typeof query.abortSignal==='function')query=query.abortSignal(ctrl.signal);
-    ({data,error,count:_exactCount}=await query);
+    const [mainRes,wRes]=await Promise.all([
+      query,
+      sb.rpc('sum_weight_filtered',rpcParams)
+    ]);
+    ({data,error,count:_exactCount}=mainRes);
+    _totalWeightKg=wRes.data||0;
   }catch(e){
     clearTimeout(_to);
     if(_reqToken!==token)return;
@@ -1422,7 +1441,7 @@ async function _fetchAndRender(token){
   const rbarRefs=document.getElementById('rbar-refs');
   const rbarTons=document.getElementById('rbar-tons');
   if(rbarRefs)rbarRefs.textContent=_totalCount.toLocaleString('fr-FR');
-  if(rbarTons){const pageTons=all.reduce((s,p)=>s+(p.poids_net||0),0)/1000;rbarTons.textContent=pageTons.toFixed(1);}
+  if(rbarTons)rbarTons.textContent=(_totalWeightKg/1000).toFixed(1);
   // Update fd-count for mobile drawer
   const fdCount=document.getElementById('fd-count');
   if(fdCount)fdCount.textContent=_totalCount.toLocaleString('fr-FR');
