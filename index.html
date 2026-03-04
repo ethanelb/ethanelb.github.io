@@ -1437,8 +1437,8 @@ async function _fetchAndRender(token){
     if(couleurs.size>0)q2=q2.or([...couleurs].map(c=>`color.ilike.%${c}%`).join(','));
     if(formats.size>0)q2=q2.in('format',[...formats]);
     if(origines.size===1)q2=q2.like('quality',[...origines][0]+'%');
-    if(longmin)q2=q2.ilike('details','%L'+longmin+'mm%');
-    if(longmax&&!longmin)q2=q2.ilike('details','%L'+longmax+'mm%');
+    if(longmin)q2=q2.gte('longueur',longmin);
+    if(longmax)q2=q2.lte('longueur',longmax);
     if(pn)q2=q2.gte('price',pn);
     if(px)q2=q2.lte('price',px);
     return q2;
@@ -1823,7 +1823,8 @@ async function openDetail(id){
     {lbl:'Qualité',   val: p.qualite},
     {lbl:'Couleur',   val: p.couleur},
     {lbl:'Grammage',  val: p.grammage?p.grammage+' g/m²':null},
-    {lbl:p.format==='Bobine'?'Laize':'Largeur', val: p.largeur?p.largeur+' mm':null},
+    {lbl:'Laize', val: p.largeur?p.largeur+' mm':null},
+    {lbl:'Longueur', val: p.format==='Palette'&&p.longueur?p.longueur+' mm':null},
     {lbl:'Mandrin',   val: p.noyau?p.noyau+' mm':null},
     {lbl:'Format',    val: p.format},
     {lbl:'Dépôt',     val: p.zone||p.emplacement},
