@@ -1609,9 +1609,14 @@ function renderCards(list){
       :`<div class="pcard-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span class="pcard-initials">${initials}</span></div>`;
     const badgeCls=p.origine==='R'?'recycled':p.origine==='S'?'standard':'other';
     const badgeTxt=p.origine==='R'?'Recyclé':p.origine==='S'?'Standard':'Autre';
+    const isPalette=p.format&&p.format.toLowerCase().includes('palette');
+    const dimTag=isPalette
+      ?[p.largeur?`${p.largeur}`:null,p.longueur?`${p.longueur}`:null].filter(Boolean).join(' × ')+(p.largeur||p.longueur?' mm':'')
+      :p.largeur?`${p.largeur} mm`:'';
     const tags=[
       p.grammage?`<span class="tag tag-gsm">${p.grammage} g/m²</span>`:'',
-      p.largeur?`<span class="tag">${p.largeur} mm</span>`:'',
+      dimTag?`<span class="tag">${dimTag}</span>`:'',
+      p.noyau?`<span class="tag">Ø${p.noyau} mm</span>`:'',
       p.format?`<span class="tag">${p.format}</span>`:'',
       p.couleur?`<span class="tag">${p.couleur}</span>`:''
     ].join('');
