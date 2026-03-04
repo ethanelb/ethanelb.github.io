@@ -167,10 +167,12 @@ header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:100;border
 .pcard-placeholder svg{opacity:.35;}
 .pcard-placeholder .pcard-initials{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gray);letter-spacing:2px;opacity:.7;}
 /* quality badge */
-.pcard-qbadge{position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;backdrop-filter:blur(4px);}
-.pcard-qbadge.recycled{background:rgba(5,150,105,.15);color:#059669;border:1px solid rgba(5,150,105,.3);}
-.pcard-qbadge.standard{background:rgba(254,0,0,.1);color:var(--red);border:1px solid rgba(254,0,0,.2);}
-.pcard-qbadge.other{background:rgba(0,0,0,.08);color:var(--ink2);border:1px solid rgba(0,0,0,.12);}
+.pcard-qbadge{position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.pcard-qbadge.qb-kraft{background:#fef3c7;color:#92400e;}
+.pcard-qbadge.qb-sbs{background:#dbeafe;color:#1e3a8a;}
+.pcard-qbadge.qb-fbb{background:#ede9fe;color:#5b21b6;}
+.pcard-qbadge.qb-recyc{background:#dcfce7;color:#166534;}
+.pcard-qbadge.qb-other{background:rgba(0,0,0,.08);color:var(--ink2);}
 .pcard-stripe{height:3px;background:var(--red);}
 .pcard-body{padding:13px;}
 .pcard-ref{font-size:10px;color:var(--gray2);font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
@@ -1610,8 +1612,9 @@ function renderCards(list){
     const imgHtml=p.image_url
       ?`<img src="${p.image_url}" alt="${p.name||''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'pcard-placeholder\\'><svg width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%23ccc\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21,15 16,10 5,21\\'/></svg><span class=\\'pcard-initials\\'>${initials}</span></div>'">`
       :`<div class="pcard-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span class="pcard-initials">${initials}</span></div>`;
-    const badgeCls=p.origine==='R'?'recycled':p.origine==='S'?'standard':'other';
-    const badgeTxt=p.origine==='R'?'Recyclé':p.origine==='S'?'Standard':'Autre';
+    const t=(p.type||'').toLowerCase();
+    const badgeCls=t.includes('kraft')?'qb-kraft':t.includes('sbs')?'qb-sbs':t.includes('fbb')||t.includes('duplex')||t.includes('triplex')?'qb-fbb':t.includes('recycl')||t.includes('testliner')||t.includes('fluting')?'qb-recyc':'qb-other';
+    const badgeTxt=p.type||'—';
     const isPalette=p.format&&p.format.toLowerCase().includes('palette');
     const dimTag=isPalette
       ?[p.largeur?`${p.largeur}`:null,p.longueur?`${p.longueur}`:null].filter(Boolean).join(' × ')+(p.largeur||p.longueur?' mm':'')
