@@ -377,10 +377,14 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
 }
 
 /* ── PAGINATION ── */
-.pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 6px;}
-.pager .pbtn{padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;}
-.pager .pbtn:disabled{opacity:.5;cursor:not-allowed;}
-.pager .pinfo{font-size:12px;color:var(--gray);font-weight:600;}
+.pager{display:flex;align-items:center;justify-content:center;gap:4px;margin:28px 0 12px;padding:0 16px;flex-wrap:wrap;}
+.parrow{width:36px;height:36px;border:1.5px solid var(--border);border-radius:50%;background:var(--white);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--ink2);line-height:1;flex-shrink:0;}
+.parrow:hover:not([disabled]){border-color:var(--red);color:var(--red);}
+.parrow[disabled]{opacity:.3;cursor:not-allowed;}
+.pnum{min-width:36px;height:36px;padding:0 6px;border:1.5px solid var(--border);border-radius:50%;background:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink2);transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.pnum:hover:not(.active){border-color:var(--red);color:var(--red);}
+.pnum.active{background:var(--red);border-color:var(--red);color:#fff;cursor:default;}
+.pellipsis{font-size:14px;color:var(--gray2);padding:0 2px;display:flex;align-items:flex-end;height:36px;padding-bottom:6px;}
 
 /* ── FILTER BAR ── */
 #filter-bar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:var(--z-filterbar);padding:0 24px;}
@@ -1318,7 +1322,7 @@ function filterProducts(){
   _filterTimer=setTimeout(_doFilter,200);
 }
 async function _doFilter(){
-  currentPage=1;
+  currentPage=1;_maxKnownPage=1;
   await _fetchAndRender(++_reqToken);
 }
 async function _fetchAndRender(token){
@@ -1428,8 +1432,11 @@ async function _fetchAndRender(token){
   render(all);
   _updatePager();
 }
+let _maxKnownPage=1;
 function _updatePager(){
   const isLast=all.length<PAGE;
+  if(!isLast&&currentPage>=_maxKnownPage)_maxKnownPage=currentPage+1;
+  else if(isLast)_maxKnownPage=Math.max(_maxKnownPage,currentPage);
   let pager=document.getElementById('pager');
   if(!pager){
     pager=document.createElement('div');
@@ -1438,12 +1445,28 @@ function _updatePager(){
     if(grid)grid.parentElement.appendChild(pager);
   }
   if(currentPage===1&&isLast){pager.innerHTML='';return;}
+  const last=_maxKnownPage;
+  // Build page number list with ellipsis
+  const pageSet=new Set([1]);
+  for(let i=Math.max(1,currentPage-2);i<=Math.min(last,currentPage+2);i++)pageSet.add(i);
+  pageSet.add(last);
+  const pages=[...pageSet].sort((a,b)=>a-b);
+  let pagesHtml='';let prev=0;
+  for(const p of pages){
+    if(p-prev>1)pagesHtml+=`<span class="pellipsis">…</span>`;
+    pagesHtml+=`<button class="pnum${p===currentPage?' active':''}" onclick="_goToPage(${p})">${p}</button>`;
+    prev=p;
+  }
   pager.innerHTML=`
-    <button class="pbtn" id="pg-prev" ${currentPage<=1?'disabled':''}>← Précédent</button>
-    <div class="pinfo">Page ${currentPage}</div>
-    <button class="pbtn" id="pg-next" ${isLast?'disabled':''}>Suivant →</button>`;
-  document.getElementById('pg-prev').onclick=()=>{if(currentPage>1){currentPage--;_fetchAndRender(_reqToken);window.scrollTo({top:0,behavior:'smooth'});}};
-  document.getElementById('pg-next').onclick=()=>{if(!isLast){currentPage++;_fetchAndRender(_reqToken);window.scrollTo({top:0,behavior:'smooth'});}};
+    <button class="parrow" ${currentPage<=1?'disabled':''} onclick="_goToPage(${currentPage-1})">‹</button>
+    ${pagesHtml}
+    <button class="parrow" ${isLast?'disabled':''} onclick="_goToPage(${currentPage+1})">›</button>`;
+}
+function _goToPage(p){
+  if(p<1||p===currentPage)return;
+  currentPage=p;
+  _fetchAndRender(_reqToken);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function updateFilterChips(){
