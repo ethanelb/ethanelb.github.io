@@ -600,7 +600,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
     <div class="fbar-sep"></div>
     <!-- Largeur -->
     <div class="fb-range">
-      <span class="fb-range-lbl">Larg.</span>
+      <span class="fb-range-lbl">Laize/Larg.</span>
       <input class="fb-inp fb-inp-wide" type="number" id="f-lmin" placeholder="mm" oninput="scheduleFilter()">
       <span style="color:var(--gray);font-size:11px">–</span>
       <input class="fb-inp fb-inp-wide" type="number" id="f-lmax" placeholder="mm" oninput="scheduleFilter()">
@@ -732,7 +732,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
           <div class="fi-unit-wrap"><input type="number" class="fi" placeholder="Max" oninput="filterProducts()"><span class="fi-unit">g/m²</span></div>
         </div>
       </div>
-      <div class="fg"><label class="fl">Largeur <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
+      <div class="fg"><label class="fl">Laize / Largeur <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
         <div class="fi-unit-wrap"><input type="number" class="fi" id="f-largeur" placeholder="ex: 1000" oninput="filterProducts()" style="width:100%"><span class="fi-unit">mm</span></div>
 
       </div>
@@ -1015,7 +1015,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
     <!-- Largeur -->
     <div class="fd-section open">
       <div class="fd-section-head" onclick="toggleFdSection(this)">
-        <span class="fd-section-title">Largeur (mm)</span><span class="fd-section-arrow">▾</span>
+        <span class="fd-section-title">Laize / Largeur (mm)</span><span class="fd-section-arrow">▾</span>
       </div>
       <div class="fd-section-body" style="padding-top:6px;">
         <div class="frow">
@@ -1794,7 +1794,7 @@ async function openDetail(id){
     {lbl:'Qualité',   val: p.qualite},
     {lbl:'Couleur',   val: p.couleur},
     {lbl:'Grammage',  val: p.grammage?p.grammage+' g/m²':null},
-    {lbl:'Largeur',   val: p.largeur?p.largeur+' mm':null},
+    {lbl:p.format==='Bobine'?'Laize':'Largeur', val: p.largeur?p.largeur+' mm':null},
     {lbl:'Mandrin',   val: p.noyau?p.noyau+' mm':null},
     {lbl:'Format',    val: p.format},
     {lbl:'Dépôt',     val: p.zone||p.emplacement},
