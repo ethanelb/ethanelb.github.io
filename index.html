@@ -1177,7 +1177,7 @@ async function init(){
 
   // Set default view based on screen width
   if(window.innerWidth>=768){
-    setView('rows');
+    setView('cards');
   }else{
     setView('cards');
   }
@@ -1324,7 +1324,7 @@ async function _doFilter(){
 async function _fetchAndRender(token){
   const g=document.getElementById('pgrid');
   if(g){
-    g.className=viewMode==='rows'?'':'pgrid-v2';
+    g.className=viewMode==='rows'?'':'pgrid';
     g.innerHTML=`<div class="skel-row-wrap">${Array(8).fill(0).map((_,i)=>`
   <div class="skel-row">
     <div class="skel-block" style="width:50px;height:20px;border-radius:3px;"></div>
@@ -1617,7 +1617,7 @@ function render(list){
   const g=document.getElementById('pgrid');
   if(!g)return;
   if(!list||list.length===0){
-    g.className='pgrid-v2';
+    g.className='pgrid';
     g.innerHTML=`<div class="empty" style="grid-column:1/-1">
       <div class="empty-svg">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
