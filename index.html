@@ -598,12 +598,20 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
       <input class="fb-inp" type="number" id="f-gmax" placeholder="max" oninput="scheduleFilter()">
     </div>
     <div class="fbar-sep"></div>
-    <!-- Largeur -->
+    <!-- Laize -->
     <div class="fb-range">
-      <span class="fb-range-lbl">Laize/Larg.</span>
+      <span class="fb-range-lbl">Laize</span>
       <input class="fb-inp fb-inp-wide" type="number" id="f-lmin" placeholder="mm" oninput="scheduleFilter()">
       <span style="color:var(--gray);font-size:11px">–</span>
       <input class="fb-inp fb-inp-wide" type="number" id="f-lmax" placeholder="mm" oninput="scheduleFilter()">
+    </div>
+    <div class="fbar-sep"></div>
+    <!-- Longueur -->
+    <div class="fb-range">
+      <span class="fb-range-lbl">Longueur</span>
+      <input class="fb-inp fb-inp-wide" type="number" id="f-longmin" placeholder="mm" oninput="scheduleFilter()">
+      <span style="color:var(--gray);font-size:11px">–</span>
+      <input class="fb-inp fb-inp-wide" type="number" id="f-longmax" placeholder="mm" oninput="scheduleFilter()">
     </div>
     <div class="fbar-sep"></div>
     <!-- Mandrin -->
@@ -732,9 +740,11 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
           <div class="fi-unit-wrap"><input type="number" class="fi" placeholder="Max" oninput="filterProducts()"><span class="fi-unit">g/m²</span></div>
         </div>
       </div>
-      <div class="fg"><label class="fl">Laize / Largeur <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
+      <div class="fg"><label class="fl">Laize <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
         <div class="fi-unit-wrap"><input type="number" class="fi" id="f-largeur" placeholder="ex: 1000" oninput="filterProducts()" style="width:100%"><span class="fi-unit">mm</span></div>
-
+      </div>
+      <div class="fg"><label class="fl">Longueur <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
+        <div class="fi-unit-wrap"><input type="number" class="fi" id="f-longueur" placeholder="ex: 700" oninput="filterProducts()" style="width:100%"><span class="fi-unit">mm</span></div>
       </div>
       <div class="fg"><label class="fl">Prix (€/T)</label>
         <div class="frow">
@@ -1012,15 +1022,27 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
         </div>
       </div>
     </div>
-    <!-- Largeur -->
+    <!-- Laize -->
     <div class="fd-section open">
       <div class="fd-section-head" onclick="toggleFdSection(this)">
-        <span class="fd-section-title">Laize / Largeur (mm)</span><span class="fd-section-arrow">▾</span>
+        <span class="fd-section-title">Laize (mm)</span><span class="fd-section-arrow">▾</span>
       </div>
       <div class="fd-section-body" style="padding-top:6px;">
         <div class="frow">
           <input class="fi" type="number" id="f-lmin-mob" placeholder="min mm" oninput="syncMobFilter('f-lmin','f-lmin-mob')">
           <input class="fi" type="number" id="f-lmax-mob" placeholder="max mm" oninput="syncMobFilter('f-lmax','f-lmax-mob')">
+        </div>
+      </div>
+    </div>
+    <!-- Longueur -->
+    <div class="fd-section open">
+      <div class="fd-section-head" onclick="toggleFdSection(this)">
+        <span class="fd-section-title">Longueur (mm)</span><span class="fd-section-arrow">▾</span>
+      </div>
+      <div class="fd-section-body" style="padding-top:6px;">
+        <div class="frow">
+          <input class="fi" type="number" id="f-longmin-mob" placeholder="min mm" oninput="syncMobFilter('f-longmin','f-longmin-mob')">
+          <input class="fi" type="number" id="f-longmax-mob" placeholder="max mm" oninput="syncMobFilter('f-longmax','f-longmax-mob')">
         </div>
       </div>
     </div>
@@ -1377,6 +1399,8 @@ async function _fetchAndRender(token){
   const px=+document.getElementById('f-pmax').value||0;
   const lmin=+document.getElementById('f-lmin').value||0;
   const lmax=+document.getElementById('f-lmax').value||0;
+  const longmin=+document.getElementById('f-longmin')?.value||0;
+  const longmax=+document.getElementById('f-longmax')?.value||0;
   const mandrins=getMsdValues('msd-mandrin');
   const couleurs=getMsdValues('msd-couleur');
   const formats=new Set([...document.querySelectorAll('.fpill.active:not(.fpill-orig)')].map(b=>b.dataset.format));
@@ -1413,6 +1437,8 @@ async function _fetchAndRender(token){
     if(couleurs.size>0)q2=q2.or([...couleurs].map(c=>`color.ilike.%${c}%`).join(','));
     if(formats.size>0)q2=q2.in('format',[...formats]);
     if(origines.size===1)q2=q2.like('quality',[...origines][0]+'%');
+    if(longmin)q2=q2.ilike('details','%L'+longmin+'mm%');
+    if(longmax&&!longmin)q2=q2.ilike('details','%L'+longmax+'mm%');
     if(pn)q2=q2.gte('price',pn);
     if(px)q2=q2.lte('price',px);
     return q2;
@@ -1544,8 +1570,11 @@ function updateFilterChips(){
     }
   });
   if(gn||gx)chips.push({label:'Gram. : '+(gn||'—')+' → '+(gx||'—')+' g/m²',clear:()=>{document.getElementById('f-gmin').value='';document.getElementById('f-gmax').value='';filterProducts();}});
-  if(la)chips.push({label:'Largeur : '+la+'mm',clear:()=>{const el=document.getElementById('f-largeur');if(el)el.value='';filterProducts();}});
-  if(lmin2||lmax2)chips.push({label:'Larg. : '+(lmin2||'—')+' → '+(lmax2||'—')+' mm',clear:()=>{['f-lmin','f-lmax','f-lmin-mob','f-lmax-mob'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});filterProducts();}});
+  if(la)chips.push({label:'Laize : '+la+'mm',clear:()=>{const el=document.getElementById('f-largeur');if(el)el.value='';filterProducts();}});
+  if(lmin2||lmax2)chips.push({label:'Laize : '+(lmin2||'—')+' → '+(lmax2||'—')+' mm',clear:()=>{['f-lmin','f-lmax','f-lmin-mob','f-lmax-mob'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});filterProducts();}});
+  const longmin2=document.getElementById('f-longmin')?.value||'';
+  const longmax2=document.getElementById('f-longmax')?.value||'';
+  if(longmin2||longmax2)chips.push({label:'Longueur : '+(longmin2||longmax2)+'mm',clear:()=>{['f-longmin','f-longmax','f-longmin-mob','f-longmax-mob'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});filterProducts();}});
   const cpn=document.getElementById('f-pmin').value,cpx=document.getElementById('f-pmax').value;
   if(cpn||cpx)chips.push({label:'Prix : '+(cpn||'—')+' → '+(cpx||'—')+' €/T',clear:()=>{document.getElementById('f-pmin').value='';document.getElementById('f-pmax').value='';filterProducts();}});
   if(!chips.length){container.innerHTML='';const ac2=document.getElementById('active-chips');if(ac2)ac2.innerHTML='';return;}
@@ -1863,7 +1892,7 @@ function resetFilters(){
   document.querySelectorAll('.fpill-orig.active').forEach(b=>b.classList.remove('active'));
   ['fb-bobine','fb-palette','fb-recyc','fb-fab'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   ['f-pmin','f-pmax','f-lmin','f-lmax'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['f-gmin','f-gmax','f-largeur'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-gmin','f-gmax','f-largeur','f-longmin','f-longmax'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['search-input','search-input-mob'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   // Reset mobile drawer inputs too
   ['f-gmin-mob','f-gmax-mob','f-lmin-mob','f-lmax-mob','f-pmin-mob','f-pmax-mob'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
