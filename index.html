@@ -1750,7 +1750,7 @@ function renderCards(list){
       ?`<div class="pcard-price">${p.price.toLocaleString('fr-FR')} €/T</div>`
       :`<div class="pcard-price-ask">Sur demande</div>`;
     return`<div class="pcard" onclick="openDetail(${p.id})">
-      <div class="pcard-img">${imgHtml}<div class="pcard-qbadge ${originCls}">${originTxt}</div></div>
+      <div class="pcard-img">${imgHtml}</div>
       <div class="pcard-stripe"></div>
       <div class="pcard-body">
         <div class="pcard-ref">${p.ref||'—'}</div>
@@ -1808,7 +1808,7 @@ function _render_legacy(list){
       ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy">`
       : placeholderSvg(p.type);
     return`<div class="pcard" onclick="openDetail('${p.id}')">
-      <div class="pcard-img">${imgHtml}${qbadge(p.qualite)}</div>
+      <div class="pcard-img">${imgHtml}</div>
       <div class="pcard-stripe"></div>
       <div class="pcard-body">
         <div class="pcard-ref">${p.ref&&!p.ref.startsWith('Photo_')?p.ref:''}</div>
@@ -1841,7 +1841,6 @@ async function openDetail(id){
     :`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;opacity:.3">${placeholderSvg(p.type)}</div>`;
 
   // Badge qualité
-  document.getElementById('det-qbadge').innerHTML=qbadge(p.qualite);
 
   // Ref + nom
   document.getElementById('det-ref').textContent=(p.ref&&!String(p.ref).startsWith('Photo_'))?p.ref:'';
