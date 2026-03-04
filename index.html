@@ -710,15 +710,19 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
         <div class="msd" id="msd-type-sidebar">
           <button class="msd-btn" onclick="toggleMsd('msd-type-sidebar')"><span class="msd-btn-label">Tous</span><span class="msd-arrow">▾</span></button>
           <div class="msd-panel">
+            <div class="msd-option" data-val="Adhésif" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Adhésif</div>
+            <div class="msd-option" data-val="Affiche" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Affiche</div>
+            <div class="msd-option" data-val="Couché" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Couché</div>
+            <div class="msd-option" data-val="Divers" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Divers</div>
             <div class="msd-option" data-val="Kraft" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Kraft</div>
-            <div class="msd-option" data-val="FBB" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>FBB</div>
-            <div class="msd-option" data-val="SBS" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>SBS</div>
-            <div class="msd-option" data-val="Testliner" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Testliner</div>
-            <div class="msd-option" data-val="Fluting" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Fluting</div>
+            <div class="msd-option" data-val="Liner" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Liner</div>
+            <div class="msd-option" data-val="LWC" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>LWC</div>
+            <div class="msd-option" data-val="Luxe" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Luxe</div>
             <div class="msd-option" data-val="Offset" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Offset</div>
+            <div class="msd-option" data-val="Packaging" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Packaging</div>
+            <div class="msd-option" data-val="SBS" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>SBS</div>
             <div class="msd-option" data-val="Thermique" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Thermique</div>
-            <div class="msd-option" data-val="Duplex" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Duplex</div>
-            <div class="msd-option" data-val="Triplex" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Triplex</div>
+            <div class="msd-option" data-val="Tissue" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Tissue</div>
           </div>
         </div>
       </div>
@@ -1087,8 +1091,28 @@ let all=[],cur=null;
 const PAGE=50; let currentPage=1,_totalCount=0,_reqToken=0;
 const ico=t=>({Kraft:'📦',FBB:'🗂️',SBS:'📋',Testliner:'🧱',Fluting:'〰️',Offset:'🧻',Thermique:'🏷️',Duplex:'📄',Triplex:'📑'}[t]||'📦');
 const fmt=kg=>!kg?'—':kg>=1000?(kg/1000).toFixed(1)+' t':kg+' kg';
-const QUALITE_LABELS={Kraft:'Kraft',FBB:'FBB',SBS:'SBS',Testliner:'Testliner',Fluting:'Fluting',Offset:'Offset',Thermique:'Thermique',Duplex:'Duplex',Triplex:'Triplex','Kraft Recyclé':'Kraft Recyclé','Semi-Chimique':'Semi-Chimique'};
-const qlabel=q=>QUALITE_LABELS[q]||q;
+// Maps user-visible type label → actual DB quality codes
+const TYPE_MAP={
+  'Kraft':        ['RKRA','SKRA','RKRABRUN','RKRG','RKRR','RKDO'],
+  'SBS':          ['SSBS'],
+  'LWC':          ['RLWC','SLWC'],
+  'Offset':       ['ROFF','SOFF'],
+  'Thermique':    ['RTHERM'],
+  'Liner':        ['RLINER'],
+  'Couché':       ['R1SC','R2SC','S1SC','S2SC'],
+  'Packaging':    ['RPAC','SPAC'],
+  'Adhésif':      ['RADH','SADH'],
+  'Tissue':       ['RTIS'],
+  'Luxe':         ['RLUX','SLUX','RBON','SBON'],
+  'Affiche':      ['RAFF','SAFF'],
+  'Divers':       ['RBOA','RBOU','RCAR','RCOL','RCUI','RDIV','RENV','RFLEX','RNEW','RPLA','RSIL','SBOA','SBOU','SCAR','SCOL','SCUT','SDIV','SENV','SINK','SNEW','SPLA','SSPE'],
+};
+function typesToQualityCodes(selectedTypes){
+  const codes=new Set();
+  for(const t of selectedTypes)(TYPE_MAP[t]||[]).forEach(c=>codes.add(c));
+  return [...codes];
+}
+const qlabel=q=>q;
 const toast=(m,d=3000)=>{const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),d);};
 const sp=v=>document.getElementById('spinner').classList.toggle('show',v);
 
@@ -1164,8 +1188,8 @@ function hideLoadProgress(){
 
 async function init(){
   // Hardcoded filter options — no DB query needed for these
-  const typeVals=Object.keys(QUALITE_LABELS).sort((a,b)=>a.localeCompare(b));
-  buildMsdOptions('msd-type',typeVals,'Tous',qlabel);
+  const typeVals=Object.keys(TYPE_MAP).sort((a,b)=>a.localeCompare(b));
+  buildMsdOptions('msd-type',typeVals,'Tous');
 
   buildMsdOptions('msd-couleur',
     ['Blanc','Brun','Ivoire','Gris','Noir','Vert','Rouge','Bleu','Jaune','Orange','Argent','Couleur','Divers'],
@@ -1174,7 +1198,7 @@ async function init(){
   buildMsdOptions('msd-mandrin',['70','76','150','152'],'Mandrins',v=>v+' mm');
 
   // Also build mobile msd panels (msd-type-mob, msd-mandrin-mob, msd-couleur-mob)
-  buildMsdOptions('msd-type-mob',typeVals,'Tous',qlabel);
+  buildMsdOptions('msd-type-mob',typeVals,'Tous');
   buildMsdOptions('msd-couleur-mob',
     ['Blanc','Brun','Ivoire','Gris','Noir','Vert','Rouge','Bleu','Jaune','Orange','Argent','Couleur','Divers'],
     'Couleurs');
@@ -1365,7 +1389,8 @@ async function _fetchAndRender(token){
   const rpcParams={};
   const safe=q?q.replace(/[%_]/g,'\\$&'):null;
   if(safe)rpcParams.q=safe;
-  if(types.size>0)rpcParams.quality_in=[...types];
+  const typeCodes=types.size>0?typesToQualityCodes(types):[];
+  if(typeCodes.length>0)rpcParams.quality_in=typeCodes;
   if(gn)rpcParams.gsm_min=gn;
   if(gx)rpcParams.gsm_max=gx;
   if(lmin)rpcParams.width_min=lmin;
@@ -1378,7 +1403,7 @@ async function _fetchAndRender(token){
   if(px)rpcParams.price_max=px;
   function _applyFilters(q2){
     if(safe)q2=q2.or(`quality.ilike.%${safe}%,color.ilike.%${safe}%,details.ilike.%${safe}%,ref.ilike.%${safe}%`);
-    if(types.size>0)q2=q2.in('quality',[...types]);
+    if(typeCodes.length>0)q2=q2.in('quality',typeCodes);
     if(gn)q2=q2.gte('gsm',gn);
     if(gx)q2=q2.lte('gsm',gx);
     if(lmin)q2=q2.gte('width',lmin);
@@ -1762,11 +1787,11 @@ async function openDetail(id){
 
   // Ref + nom
   document.getElementById('det-ref').textContent=(p.ref&&!String(p.ref).startsWith('Photo_'))?p.ref:'';
-  document.getElementById('det-name').textContent=p.name||QUALITE_LABELS[p.qualite]||p.qualite||'Produit';
+  document.getElementById('det-name').textContent=p.name||p.qualite||'Produit';
 
   // Specs grid
   const specDefs=[
-    {lbl:'Qualité',   val: QUALITE_LABELS[p.qualite]||p.qualite},
+    {lbl:'Qualité',   val: p.qualite},
     {lbl:'Couleur',   val: p.couleur},
     {lbl:'Grammage',  val: p.grammage?p.grammage+' g/m²':null},
     {lbl:'Largeur',   val: p.largeur?p.largeur+' mm':null},
