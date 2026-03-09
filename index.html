@@ -1200,7 +1200,7 @@ const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 const sb=supabase.createClient(SURL,SKEY);
 const WA='33649754915';
 let all=[],cur=null;
-const PAGE=52; let currentPage=1,_totalCount=0,_reqToken=0,_lastCorrections=[];
+const PAGE=52; let currentPage=1,_totalCount=0,_reqToken=0,_lastCorrections=[],_isFirstLoad=true;
 const ico=t=>({Kraft:'📦',FBB:'🗂️',SBS:'📋',Testliner:'🧱',Fluting:'〰️',Offset:'🧻',Thermique:'🏷️',Duplex:'📄',Triplex:'📑'}[t]||'📦');
 const fmt=kg=>!kg?'—':kg>=1000?(kg/1000).toFixed(1)+' t':kg+' kg';
 // Maps user-visible type label → actual DB quality codes
@@ -1709,7 +1709,9 @@ function filterProducts(){
   _filterTimer=setTimeout(_doFilter,200);
 }
 async function _doFilter(){
-  currentPage=1;_maxKnownPage=1;
+  if(_isFirstLoad){currentPage=1+Math.floor(Math.random()*20);_isFirstLoad=false;}
+  else{currentPage=1;}
+  _maxKnownPage=1;
   await _fetchAndRender(++_reqToken);
 }
 async function _fetchAndRender(token){
