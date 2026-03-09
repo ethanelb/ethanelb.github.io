@@ -830,7 +830,10 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
         </div>
       </div>
       <div class="fg" id="sb-sec-laize"><label class="fl" id="sb-laize-lbl">Laize <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
-        <div class="fi-unit-wrap"><input type="number" class="fi" id="f-largeur" placeholder="ex: 1000" oninput="filterProducts()" style="width:100%"><span class="fi-unit">mm</span></div>
+        <div class="frow">
+          <div class="fi-unit-wrap"><input type="number" class="fi" id="f-lmin-sb" placeholder="Min" oninput="syncSbFilter('f-lmin',this.value)"><span class="fi-unit">mm</span></div>
+          <div class="fi-unit-wrap"><input type="number" class="fi" id="f-lmax-sb" placeholder="Max" oninput="syncSbFilter('f-lmax',this.value)"><span class="fi-unit">mm</span></div>
+        </div>
       </div>
       <div class="fg" id="sb-sec-longueur"><label class="fl">Longueur <span style="font-weight:400;font-size:11px;color:var(--gray)">(mm)</span></label>
         <div class="fi-unit-wrap"><input type="number" class="fi" id="f-longueur" placeholder="ex: 700" oninput="filterProducts()" style="width:100%"><span class="fi-unit">mm</span></div>
@@ -1728,7 +1731,7 @@ async function _fetchAndRender(token){
   const types=getMsdValues('msd-type');
   const gn=+document.getElementById('f-gmin').value||0;
   const gx=+document.getElementById('f-gmax').value||0;
-  const la=+document.getElementById('f-largeur').value||0;
+  const la=0;
   const pn=+document.getElementById('f-pmin').value||0;
   const px=+document.getElementById('f-pmax').value||0;
   const lmin=+document.getElementById('f-lmin').value||0;
@@ -1909,7 +1912,7 @@ function updateFilterChips(){
   const q=document.getElementById('search-input').value;
   const gn=document.getElementById('f-gmin').value;
   const gx=document.getElementById('f-gmax').value;
-  const la=document.getElementById('f-largeur')?.value||'';
+  const la='';
   const lmin2=document.getElementById('f-lmin')?.value||'';
   const lmax2=document.getElementById('f-lmax')?.value||'';
   if(q)chips.push({label:'Recherche : "'+q+'"',clear:()=>{document.getElementById('search-input').value='';document.getElementById('search-input-mob').value='';filterProducts();}});
@@ -2258,7 +2261,7 @@ function resetFilters(){
   document.querySelectorAll('.fpill-orig.active').forEach(b=>b.classList.remove('active'));
   ['fb-bobine','fb-palette','fb-recyc','fb-fab'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
   ['f-pmin','f-pmax','f-lmin','f-lmax'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['f-gmin','f-gmax','f-largeur','f-longmin','f-longmax','f-longueur','f-ref-code'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-gmin','f-gmax','f-lmin-sb','f-lmax-sb','f-longmin','f-longmax','f-longueur','f-ref-code'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['f-gmin-sb','f-gmax-sb','f-pmin-sb','f-pmax-sb'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['search-input','search-input-mob'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   // Reset mobile drawer inputs too
