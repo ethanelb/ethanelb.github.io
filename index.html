@@ -1512,18 +1512,31 @@ document.addEventListener('click',e=>{
 
 function parseSearchQuery(raw){
   if(!raw)return{text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[],corrections:[]};
-  const STOP=new Set(['gramme','grammes','grammage','gms','millimetre','millimetres','laize','largeur','kg','kilo','tonne','tonnes','de','du','le','la','les','en','et','un','une']);
+  const STOP=new Set(['de','du','le','la','les','en','et','un','une','kg','kilo','tonne','tonnes']);
+  const CTX_GSM=new Set(['gramme','grammes','grammage','gms','gsm']);
+  const CTX_WIDTH=new Set(['laize','largeur','millimetre','millimetres','mm','larg']);
+  const CTX_NOYAU=new Set(['noyau','mandrin','noyaux','mandrins']);
   const tokens=_norm(raw).split(/[\s,;/]+/).filter(Boolean);
-  const res={text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[],corrections:[]};
+  const res={text:[],gsm:null,width:null,noyau:null,formats:[],colors:[],qualityCodes:[],corrections:[]};
+  let nextIs=null; // context hint for next number: 'gsm'|'width'|'noyau'
   for(const tok of tokens){
     if(STOP.has(tok))continue;
+    if(CTX_GSM.has(tok)){nextIs='gsm';continue;}
+    if(CTX_WIDTH.has(tok)){nextIs='width';continue;}
+    if(CTX_NOYAU.has(tok)){nextIs='noyau';continue;}
     const nm=tok.match(/^(\d+)(g|gsm|gm2|gm|gramme|grammes|gms)?$/);
     if(nm){const n=+nm[1];
+      const hasGsmSuffix=!!nm[2];
+      if(nextIs==='gsm'||hasGsmSuffix){res.gsm=n;nextIs=null;continue;}
+      if(nextIs==='width'){res.width=n;nextIs=null;continue;}
+      if(nextIs==='noyau'){res.noyau=n;nextIs=null;continue;}
+      // no context → infer from range
       if(n>=20&&n<=800){res.gsm=n;continue;}
       if(n>800&&n<=3500){res.width=n;continue;}
     }
     const mm=tok.match(/^(\d+)mm$/);
-    if(mm){res.width=+mm[1];continue;}
+    if(mm){res.width=+mm[1];nextIs=null;continue;}
+    nextIs=null;
     // Match against vocab (exact first, then fuzzy)
     const fz=fuzzyVocab(tok);
     if(fz){
@@ -1605,7 +1618,9 @@ async function _fetchAndRender(token){
   if(_gsm){rpcParams.gsm_min=_gsm;rpcParams.gsm_max=_gsm;}
   if(lmin)rpcParams.width_min=lmin; if(lmax)rpcParams.width_max=lmax;
   if(_width){rpcParams.width_min=_width;rpcParams.width_max=_width;}
+  const _pNoyau=parsed.noyau&&!mandrins.size?String(parsed.noyau):null;
   if(mandrins.size>0)rpcParams.noyau_in=[...mandrins];
+  else if(_pNoyau)rpcParams.noyau_in=[_pNoyau];
   const _allColors=[...couleurs,..._pcolors];
   if(_allColors.length)rpcParams.color_in=_allColors;
   const _allFormats=[...formats,..._pformats];
@@ -1624,6 +1639,7 @@ async function _fetchAndRender(token){
     if(la&&!lmin&&!lmax)q2=q2.eq('width',la);
     if(_width)q2=q2.eq('width',_width);
     if(mandrins.size>0)q2=q2.in('noyau',[...mandrins]);
+    else if(_pNoyau)q2=q2.eq('noyau',_pNoyau);
     if(_allColors.length)q2=q2.or(_allColors.map(c=>`color.ilike.%${c}%`).join(','));
     if(_allFormats.length)q2=q2.in('format',_allFormats);
     if(origines.size===1)q2=q2.like('quality',[...origines][0]+'%');
