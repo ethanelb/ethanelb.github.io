@@ -200,7 +200,7 @@ header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:100;border
 .btn-add-cart.added .cart-icon{display:none;}
 /* Card action row */
 .pcard-actions{display:flex;gap:6px;margin-top:9px;}
-.pcard-actions .btn-add-cart{margin-top:0;flex:1;}
+.pcard-actions .btn-add-cart{margin-top:0;flex:1;width:auto;min-width:0;}
 .btn-wa-card{padding:9px 10px;background:var(--off);color:#25D366;border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .btn-wa-card:hover{background:#25D366;color:#fff;border-color:#25D366;}
 .btn-cmp-card{padding:9px 10px;background:var(--off);color:var(--ink2);border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;}
@@ -1288,7 +1288,13 @@ function rowToUi(r){
   const image_url = r.image_url || '';
 
   // UI expects: name,type,grammage,largeur,poids_net,couleur,qualite,product_photos
-  const _detMain=details?details.split('·')[0].replace(/\s*-\s*-\s*$/,'').trim():'';
+  // Split on ' · ' or ' - - ' to get first clean segment, then title-case
+  const _detMain=(()=>{
+    if(!details) return '';
+    const seg=details.split(/\s*[·]\s*|\s+-\s+-\s+/)[0].trim();
+    if(!seg) return '';
+    return seg.charAt(0).toUpperCase()+seg.slice(1).toLowerCase();
+  })();
   const _typeLabel=Object.entries(TYPE_MAP).find(([,v])=>v.includes(quality))?.[0]||'';
   const name=_detMain||[_typeLabel,simplCouleur(color)].filter(Boolean).join(' — ')||(ref&&!ref.startsWith('Photo_')?ref:'Produit');
   const type = quality || 'Produit';
