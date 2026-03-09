@@ -1989,7 +1989,7 @@ function addToCart(id){
 }
 
 function removeFromCart(id){
-  cart=cart.filter(x=>x.id!==id);
+  cart=cart.filter(x=>x.id!=id);
   localStorage.setItem('prodi_cart',JSON.stringify(cart));
   updateCartBadge();renderDrawer();
 }
