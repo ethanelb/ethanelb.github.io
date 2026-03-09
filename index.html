@@ -1926,6 +1926,7 @@ function contactWA(){
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Bonjour, intéressé par : ${cur.name}${cur.ref?' ('+cur.ref+')':''} — ${fmt(cur.poids_net)} disponibles. Quel est votre prix ?`)}`, '_blank');
 }
 function resetFilters(){
+  document.querySelectorAll('.msd-option.selected').forEach(o=>o.classList.remove('selected'));
   ['msd-type','msd-mandrin','msd-couleur'].forEach(id=>resetMsd(id));
   document.querySelectorAll('.fpill.active').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.fpill-orig.active').forEach(b=>b.classList.remove('active'));
