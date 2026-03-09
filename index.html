@@ -754,21 +754,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
       <div class="fg"><label class="fl">Type<span class="fl-count" id="fl-count-type" style="display:none">0</span></label>
         <div class="msd" id="msd-type-sidebar">
           <button class="msd-btn" onclick="toggleMsd('msd-type-sidebar')"><span class="msd-btn-label">Tous</span><span class="msd-arrow">▾</span></button>
-          <div class="msd-panel">
-            <div class="msd-option" data-val="Adhésif" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Adhésif</div>
-            <div class="msd-option" data-val="Affiche" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Affiche</div>
-            <div class="msd-option" data-val="Couché" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Couché</div>
-            <div class="msd-option" data-val="Divers" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Divers</div>
-            <div class="msd-option" data-val="Kraft" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Kraft</div>
-            <div class="msd-option" data-val="Liner" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Liner</div>
-            <div class="msd-option" data-val="LWC" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>LWC</div>
-            <div class="msd-option" data-val="Luxe" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Luxe</div>
-            <div class="msd-option" data-val="Offset" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Offset</div>
-            <div class="msd-option" data-val="Packaging" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Packaging</div>
-            <div class="msd-option" data-val="SBS" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>SBS</div>
-            <div class="msd-option" data-val="Thermique" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Thermique</div>
-            <div class="msd-option" data-val="Tissue" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>Tissue</div>
-          </div>
+          <div class="msd-panel"></div>
         </div>
       </div>
       <div class="fg"><label class="fl">Grammage <span style="font-weight:400;font-size:11px;color:var(--gray)">(g/m²)</span></label>
@@ -1141,19 +1127,37 @@ const ico=t=>({Kraft:'📦',FBB:'🗂️',SBS:'📋',Testliner:'🧱',Fluting:'�
 const fmt=kg=>!kg?'—':kg>=1000?(kg/1000).toFixed(1)+' t':kg+' kg';
 // Maps user-visible type label → actual DB quality codes
 const TYPE_MAP={
-  'Kraft':        ['RKRA','SKRA','RKRABRUN','RKRG','RKRR','RKDO'],
-  'SBS':          ['SSBS'],
-  'LWC':          ['RLWC','SLWC'],
-  'Offset':       ['ROFF','SOFF'],
-  'Thermique':    ['RTHERM'],
-  'Liner':        ['RLINER'],
-  'Couché':       ['R1SC','R2SC','S1SC','S2SC'],
-  'Packaging':    ['RPAC','SPAC'],
-  'Adhésif':      ['RADH','SADH'],
-  'Tissue':       ['RTIS'],
-  'Luxe':         ['RLUX','SLUX','RBON','SBON'],
-  'Affiche':      ['RAFF','SAFF'],
-  'Divers':       ['RBOA','RBOU','RCAR','RCOL','RCUI','RDIV','RENV','RFLEX','RNEW','RPLA','RSIL','SBOA','SBOU','SCAR','SCOL','SCUT','SDIV','SENV','SINK','SNEW','SPLA','SSPE'],
+  'Adhésif':           ['RADH','SADH'],
+  'Autocopiant':       ['RCAR','SCAR'],
+  'Bouffant':          ['RBOU','SBOU'],
+  'Carton couché':     ['RBOA','SBOA'],
+  'Carton non couché': ['RBON','SBON'],
+  'Complexe':          ['RFLEX'],
+  'Couché 1 face':     ['R1SC','S1SC'],
+  'Couché 2 faces':    ['R2SC','S2SC'],
+  'Couleur':           ['RCOL','SCOL'],
+  'Cuisson':           ['RCUI'],
+  'Divers':            ['RDIV','SDIV'],
+  'Emballage':         ['RPAC','SPAC'],
+  'Encre':             ['SINK'],
+  'Enveloppes':        ['RENV','SENV'],
+  'Journal':           ['RNEW','SNEW'],
+  'Kraft':             ['RKRA','RKRABRUN','SKRA'],
+  'Kraft armé':        ['RKRR'],
+  'Kraft gomme':       ['RKRG'],
+  'Liner':             ['RLINER'],
+  'Luxe':              ['RLUX','SLUX'],
+  'LWC':               ['RLWC','SLWC'],
+  'Offset':            ['ROFF','SOFF'],
+  'Ouate':             ['RTIS'],
+  'Papier affiche':    ['RAFF','SAFF'],
+  'Papier cadeau':     ['RKDO'],
+  'Plastique':         ['RPLA','SPLA'],
+  'Ramette':           ['SCUT'],
+  'SBS':               ['SSBS'],
+  'Silicone-Glassine': ['RSIL'],
+  'Spécial':           ['SSPE'],
+  'Thermique':         ['RTHERM'],
 };
 function typesToQualityCodes(selectedTypes){
   const codes=new Set();
@@ -1239,6 +1243,7 @@ async function init(){
   // Hardcoded filter options — no DB query needed for these
   const typeVals=Object.keys(TYPE_MAP).sort((a,b)=>a.localeCompare(b));
   buildMsdOptions('msd-type',typeVals,'Tous');
+  buildMsdOptions('msd-type-sidebar',typeVals,'Tous');
 
   buildMsdOptions('msd-couleur',
     ['Blanc','Brun','Ivoire','Gris','Noir','Vert','Rouge','Bleu','Jaune','Orange','Argent','Couleur','Divers'],
