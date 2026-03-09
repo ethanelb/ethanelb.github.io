@@ -170,7 +170,7 @@ header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:100;border
 
 /* ── CARDS ── */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
-.pcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .22s;position:relative;}
+.pcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .22s;position:relative;display:flex;flex-direction:column;}
 .pcard:hover{border-color:rgba(254,0,0,.4);box-shadow:0 8px 32px rgba(254,0,0,.12);transform:translateY(-3px);}
 .pcard-img{height:145px;background:linear-gradient(135deg,var(--off) 0%,var(--off2) 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .pcard-img img{width:100%;height:100%;object-fit:contain;background:var(--off);}
@@ -181,7 +181,7 @@ header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:100;border
 /* quality badge overlay on photo */
 .pcard-qbadge{position:absolute;bottom:8px;left:8px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fff;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.3);}
 .pcard-stripe{height:3px;background:var(--red);}
-.pcard-body{padding:13px;}
+.pcard-body{padding:13px;flex:1;display:flex;flex-direction:column;}
 .pcard-ref{font-size:10px;color:var(--gray2);font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
 .pcard-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.3px;color:var(--black);line-height:1.15;margin-bottom:8px;}
 .tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px;}
@@ -199,8 +199,9 @@ header{background:rgba(255,255,255,.92);position:sticky;top:0;z-index:100;border
 .btn-add-cart.added .cart-check{display:inline-block;animation:checkpop .3s cubic-bezier(.34,1.56,.64,1);}
 .btn-add-cart.added .cart-icon{display:none;}
 /* Card action row */
-.pcard-actions{display:flex;gap:6px;margin-top:9px;}
+.pcard-actions{display:flex;gap:6px;margin-top:auto;}
 .pcard-actions .btn-add-cart{margin-top:0;flex:1;width:auto;min-width:0;}
+.pcard-body>.btn-add-cart{margin-top:auto;}
 .btn-wa-card{padding:9px 10px;background:var(--off);color:#25D366;border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .btn-wa-card:hover{background:#25D366;color:#fff;border-color:#25D366;}
 .btn-cmp-card{padding:9px 10px;background:var(--off);color:var(--ink2);border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:600;}
