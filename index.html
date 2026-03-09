@@ -1404,6 +1404,29 @@ function buildMsdOptions(msdId, values, defaultLabel, labelFn, stateId){
   values.forEach(v=>makeOpt(v, labelFn ? labelFn(v) : v));
 }
 
+function parseSearchQuery(raw){
+  if(!raw)return{text:[],gsm:null,width:null,formats:[],colors:[]};
+  const COLORS=['blanc','brun','noir','gris','ivoire','vert','rouge','bleu','jaune','orange','argent','couleur','divers'];
+  const FORMATS=['bobine','palette'];
+  const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const tokens=norm(raw).split(/[\s,;/]+/).filter(Boolean);
+  const res={text:[],gsm:null,width:null,formats:[],colors:[]};
+  for(const tok of tokens){
+    // e.g. 80g 80gsm 80g/m2 → gsm; 1250mm 1250 → width
+    const nm=tok.match(/^(\d+)(g|gsm|gm2)?$/);
+    if(nm){const n=+nm[1];
+      if(n>=20&&n<=800){res.gsm=n;continue;}
+      if(n>800&&n<=3500){res.width=n;continue;}
+    }
+    const mm=tok.match(/^(\d+)mm$/);
+    if(mm){res.width=+mm[1];continue;}
+    if(FORMATS.includes(tok)){res.formats.push(tok.charAt(0).toUpperCase()+tok.slice(1));continue;}
+    if(COLORS.includes(tok)){res.colors.push(tok.charAt(0).toUpperCase()+tok.slice(1));continue;}
+    if(tok.length>=2)res.text.push(tok);
+  }
+  return res;
+}
+
 let _filterTimer=null;
 function filterProducts(){
   clearTimeout(_filterTimer);
@@ -1451,34 +1474,43 @@ async function _fetchAndRender(token){
   const sortEl=document.getElementById('sort-sel')||document.getElementById('sort-select');
   const s=sortEl?sortEl.value:'date_desc';
 
+  const parsed=parseSearchQuery(q);
+
   let query=sb.from('products').select('*',{count:'exact'});
   // Build RPC params for sum_weight_filtered
   const rpcParams={};
-  const safe=q?q.replace(/[%_]/g,'\\$&'):null;
-  if(safe)rpcParams.q=safe;
+  if(parsed.text.length)rpcParams.q=parsed.text.join(' ').replace(/[%_]/g,'\\$&');
   const typeCodes=types.size>0?typesToQualityCodes(types):[];
   if(typeCodes.length>0)rpcParams.quality_in=typeCodes;
-  if(gn)rpcParams.gsm_min=gn;
-  if(gx)rpcParams.gsm_max=gx;
-  if(lmin)rpcParams.width_min=lmin;
-  if(lmax)rpcParams.width_max=lmax;
+  const _gsm=parsed.gsm&&!gn&&!gx?parsed.gsm:null;
+  const _width=parsed.width&&!la&&!lmin&&!lmax?parsed.width:null;
+  const _pformats=parsed.formats.length&&!formats.size?parsed.formats:[];
+  const _pcolors=parsed.colors.length&&!couleurs.size?parsed.colors:[];
+  if(gn)rpcParams.gsm_min=gn; if(gx)rpcParams.gsm_max=gx;
+  if(_gsm){rpcParams.gsm_min=_gsm;rpcParams.gsm_max=_gsm;}
+  if(lmin)rpcParams.width_min=lmin; if(lmax)rpcParams.width_max=lmax;
+  if(_width){rpcParams.width_min=_width;rpcParams.width_max=_width;}
   if(mandrins.size>0)rpcParams.noyau_in=[...mandrins];
-  if(couleurs.size>0)rpcParams.color_in=[...couleurs];
-  if(formats.size>0)rpcParams.format_in=[...formats];
+  const _allColors=[...couleurs,..._pcolors];
+  if(_allColors.length)rpcParams.color_in=_allColors;
+  const _allFormats=[...formats,..._pformats];
+  if(_allFormats.length)rpcParams.format_in=_allFormats;
   if(origines.size===1)rpcParams.origine_prefix=[...origines][0];
   if(pn)rpcParams.price_min=pn;
   if(px)rpcParams.price_max=px;
   function _applyFilters(q2){
-    if(safe)q2=q2.or(`quality.ilike.%${safe}%,color.ilike.%${safe}%,details.ilike.%${safe}%,ref.ilike.%${safe}%`);
+    parsed.text.forEach(term=>{const s=term.replace(/[%_]/g,'\\$&');q2=q2.or(`quality.ilike.%${s}%,color.ilike.%${s}%,details.ilike.%${s}%,ref.ilike.%${s}%`);});
     if(typeCodes.length>0)q2=q2.in('quality',typeCodes);
     if(gn)q2=q2.gte('gsm',gn);
     if(gx)q2=q2.lte('gsm',gx);
+    if(_gsm)q2=q2.eq('gsm',_gsm);
     if(lmin)q2=q2.gte('width',lmin);
     if(lmax)q2=q2.lte('width',lmax);
     if(la&&!lmin&&!lmax)q2=q2.eq('width',la);
+    if(_width)q2=q2.eq('width',_width);
     if(mandrins.size>0)q2=q2.in('noyau',[...mandrins]);
-    if(couleurs.size>0)q2=q2.or([...couleurs].map(c=>`color.ilike.%${c}%`).join(','));
-    if(formats.size>0)q2=q2.in('format',[...formats]);
+    if(_allColors.length)q2=q2.or(_allColors.map(c=>`color.ilike.%${c}%`).join(','));
+    if(_allFormats.length)q2=q2.in('format',_allFormats);
     if(origines.size===1)q2=q2.like('quality',[...origines][0]+'%');
     if(longmin)q2=q2.gte('longueur',longmin);
     if(longmax)q2=q2.lte('longueur',longmax);
