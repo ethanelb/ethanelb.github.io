@@ -1989,7 +1989,7 @@ function addToCart(id){
 }
 
 function removeFromCart(id){
-  cart=cart.filter(x=>x.id!=id);
+  cart=cart.filter(x=>x.id!=+id);
   localStorage.setItem('prodi_cart',JSON.stringify(cart));
   updateCartBadge();renderDrawer();
 }
@@ -2033,14 +2033,14 @@ function renderDrawer(){
   footer.style.display='block';
   items.innerHTML=cart.map(p=>`
     <div class="cart-item">
-      <div class="cart-item-img">${(p.img||(all.find(x=>x.id===p.id)?.image_url))?`<img src="${p.img||all.find(x=>x.id===p.id)?.image_url}">`:`${ico(p.type)}`}</div>
+      <div class="cart-item-img">${(p.img||(all.find(x=>x.id==p.id)?.image_url))?`<img src="${p.img||all.find(x=>x.id==p.id)?.image_url}">`:`${ico(p.type)}`}</div>
       <div class="cart-item-info">
         <div class="cart-item-ref">${p.ref&&!p.ref.startsWith('Photo_')?p.ref:''}</div>
         <div class="cart-item-name">${p.name}</div>
         <div class="tags" style="margin-bottom:0">${p.grammage?`<span class="tag">${p.grammage}g/m²</span>`:''}${p.largeur?`<span class="tag">${p.largeur}mm</span>`:''}</div>
         <div class="cart-item-sub">${fmt(p.poids_net)} disponibles</div>
       </div>
-      <button class="cart-item-rm" onclick="removeFromCart('${p.id}')" title="Retirer">✕</button>
+      <button class="cart-item-rm" onclick="removeFromCart(${p.id})" title="Retirer">✕</button>
     </div>
   `).join('');
 }
