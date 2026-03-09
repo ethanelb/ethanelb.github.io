@@ -545,6 +545,10 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
   }
   .filters-panel::-webkit-scrollbar{width:4px;}
   .filters-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  /* Sidebar: msd panels in flow (not absolute) to avoid overflow clipping */
+  .filters-panel .msd-panel{position:static !important;width:100% !important;box-shadow:none;border:1px solid var(--border);margin-top:4px;max-height:220px;overflow-y:auto;}
+  .filters-panel .msd-panel:not(.show){display:none;}
+  .filters-panel .msd{position:static;}
   /* Content column */
   .body-wrap>div:last-child{
     padding:16px 0 0 24px;
