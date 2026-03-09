@@ -1751,7 +1751,6 @@ function renderCards(list){
       ?[p.largeur?`${p.largeur}`:null,p.longueur?`${p.longueur}`:null].filter(Boolean).join(' × ')+(p.largeur||p.longueur?' mm':'')
       :p.largeur?`${p.largeur} mm`:'';
     const tags=[
-      p.qualite?`<span class="tag tag-qual">${p.qualite}</span>`:'',
       p.grammage?`<span class="tag tag-gsm">${p.grammage} g/m²</span>`:'',
       dimTag?`<span class="tag">${dimTag}</span>`:'',
       p.noyau?`<span class="tag">Ø${p.noyau} mm</span>`:'',
