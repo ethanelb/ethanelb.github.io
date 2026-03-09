@@ -1405,14 +1405,16 @@ function buildMsdOptions(msdId, values, defaultLabel, labelFn, stateId){
 }
 
 function parseSearchQuery(raw){
-  if(!raw)return{text:[],gsm:null,width:null,formats:[],colors:[]};
+  if(!raw)return{text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[]};
   const COLORS=['blanc','brun','noir','gris','ivoire','vert','rouge','bleu','jaune','orange','argent','couleur','divers'];
   const FORMATS=['bobine','palette'];
   const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  // Build normalized type lookup: "kraft" → ['RKRA','RKRABRUN','SKRA']
+  const TYPE_NORM={};
+  for(const[k,v]of Object.entries(TYPE_MAP))TYPE_NORM[norm(k)]=v;
   const tokens=norm(raw).split(/[\s,;/]+/).filter(Boolean);
-  const res={text:[],gsm:null,width:null,formats:[],colors:[]};
+  const res={text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[]};
   for(const tok of tokens){
-    // e.g. 80g 80gsm 80g/m2 → gsm; 1250mm 1250 → width
     const nm=tok.match(/^(\d+)(g|gsm|gm2)?$/);
     if(nm){const n=+nm[1];
       if(n>=20&&n<=800){res.gsm=n;continue;}
@@ -1420,6 +1422,8 @@ function parseSearchQuery(raw){
     }
     const mm=tok.match(/^(\d+)mm$/);
     if(mm){res.width=+mm[1];continue;}
+    // Type name → quality codes (e.g. "kraft" → RKRA/RKRABRUN/SKRA)
+    if(TYPE_NORM[tok]){res.qualityCodes.push(...TYPE_NORM[tok]);continue;}
     if(FORMATS.includes(tok)){res.formats.push(tok.charAt(0).toUpperCase()+tok.slice(1));continue;}
     if(COLORS.includes(tok)){res.colors.push(tok.charAt(0).toUpperCase()+tok.slice(1));continue;}
     if(tok.length>=2)res.text.push(tok);
@@ -1475,12 +1479,15 @@ async function _fetchAndRender(token){
   const s=sortEl?sortEl.value:'date_desc';
 
   const parsed=parseSearchQuery(q);
+  // Merge sidebar type codes + search-detected type codes
+  const _sideCodes=types.size>0?typesToQualityCodes(types):[];
+  const _pCodes=parsed.qualityCodes.length&&!_sideCodes.length?parsed.qualityCodes:[];
+  const typeCodes=[..._sideCodes,..._pCodes];
 
   let query=sb.from('products').select('*',{count:'exact'});
   // Build RPC params for sum_weight_filtered
   const rpcParams={};
   if(parsed.text.length)rpcParams.q=parsed.text.join(' ').replace(/[%_]/g,'\\$&');
-  const typeCodes=types.size>0?typesToQualityCodes(types):[];
   if(typeCodes.length>0)rpcParams.quality_in=typeCodes;
   const _gsm=parsed.gsm&&!gn&&!gx?parsed.gsm:null;
   const _width=parsed.width&&!la&&!lmin&&!lmax?parsed.width:null;
