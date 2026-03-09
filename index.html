@@ -1966,7 +1966,7 @@ function addToCart(id){
   const p=all.find(x=>x.id==id);if(!p)return;
   // eslint-disable-next-line eqeqeq
   if(cart.find(x=>x.id==id)){toast('⚠️ Déjà dans le panier');return;}
-  cart.push({id:p.id,name:p.name,ref:p.ref,type:p.type,grammage:p.grammage,largeur:p.largeur,format:p.format,poids_net:p.poids_net,img:p.product_photos?.[0]?.url||null});
+  cart.push({id:p.id,name:p.name,ref:p.ref,type:p.type,grammage:p.grammage,largeur:p.largeur,format:p.format,poids_net:p.poids_net,img:p.image_url||null});
   localStorage.setItem('prodi_cart',JSON.stringify(cart));
   updateCartBadge();
   // Update legacy cards
