@@ -2033,7 +2033,7 @@ function renderDrawer(){
   footer.style.display='block';
   items.innerHTML=cart.map(p=>`
     <div class="cart-item">
-      <div class="cart-item-img">${p.img?`<img src="${p.img}">`:`${ico(p.type)}`}</div>
+      <div class="cart-item-img">${(p.img||(all.find(x=>x.id===p.id)?.image_url))?`<img src="${p.img||all.find(x=>x.id===p.id)?.image_url}">`:`${ico(p.type)}`}</div>
       <div class="cart-item-info">
         <div class="cart-item-ref">${p.ref&&!p.ref.startsWith('Photo_')?p.ref:''}</div>
         <div class="cart-item-name">${p.name}</div>
