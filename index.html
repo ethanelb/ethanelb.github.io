@@ -1243,7 +1243,7 @@ async function init(){
   // Hardcoded filter options — no DB query needed for these
   const typeVals=Object.keys(TYPE_MAP).sort((a,b)=>a.localeCompare(b));
   buildMsdOptions('msd-type',typeVals,'Tous');
-  buildMsdOptions('msd-type-sidebar',typeVals,'Tous');
+  buildMsdOptions('msd-type-sidebar',typeVals,'Tous',null,'msd-type');
 
   buildMsdOptions('msd-couleur',
     ['Blanc','Brun','Ivoire','Gris','Noir','Vert','Rouge','Bleu','Jaune','Orange','Argent','Couleur','Divers'],
@@ -1371,7 +1371,8 @@ document.addEventListener('click', e => {
 });
 
 
-function buildMsdOptions(msdId, values, defaultLabel, labelFn){
+function buildMsdOptions(msdId, values, defaultLabel, labelFn, stateId){
+  const targetId = stateId || msdId;
   const msd = document.getElementById(msdId);
   if(!msd) return;
   const panel = msd.querySelector('.msd-panel');
@@ -1389,7 +1390,7 @@ function buildMsdOptions(msdId, values, defaultLabel, labelFn){
     opt.className = 'msd-option';
     opt.setAttribute('data-val', val);
     opt.innerHTML = `<div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>${text}`;
-    opt.addEventListener('click', ()=>toggleMsdOption(opt, msdId));
+    opt.addEventListener('click', ()=>toggleMsdOption(opt, targetId));
     panel.appendChild(opt);
   };
 
