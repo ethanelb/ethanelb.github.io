@@ -1763,7 +1763,7 @@ function renderCards(list){
       ?`<div class="pcard-price">${p.price.toLocaleString('fr-FR')} €/T</div>`
       :`<div class="pcard-price-ask">Sur demande</div>`;
     return`<div class="pcard" onclick="openDetail(${p.id})">
-      <div class="pcard-img">${imgHtml}${p.qualite?`<div class="pcard-qbadge">${p.qualite}</div>`:''}</div>
+      <div class="pcard-img">${imgHtml}</div>
       <div class="pcard-stripe"></div>
       <div class="pcard-body">
         <div class="pcard-ref">${p.ref||'—'}</div>
@@ -1861,7 +1861,6 @@ async function openDetail(id){
 
   // Specs grid
   const specDefs=[
-    {lbl:'Référence', val: p.qualite},
     {lbl:'Couleur',   val: p.couleur},
     {lbl:'Grammage',  val: p.grammage?p.grammage+' g/m²':null},
     {lbl:'Laize', val: p.largeur?p.largeur+' mm':null},
