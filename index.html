@@ -933,7 +933,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
         <div class="drawer-total-val" id="drawer-total">—</div>
       </div>
     </div>
-    <div class="no-price-note">🔒 Prix sur demande — aucun tarif affiché</div>
+    <div class="no-price-note">Prix Départ usine</div>
     <button class="btn-pf-drawer" onclick="openCartProforma()">📄 DEMANDER UN DEVIS</button>
     <div class="pf-microcopy">Réponse sous 24h ouvrées &bull; Origine UE &bull; Documents disponibles</div>
     <button class="btn-clear-drawer" onclick="confirmClearCart()">Vider le container</button>
@@ -2148,7 +2148,7 @@ function _render_legacy(list){
         <button class="btn-add-cart" onclick="event.stopPropagation();addToCart('${p.id}')"><span class="cart-icon">🛒</span><span class="cart-check">✓</span> Ajouter</button>
         <div class="pcard-foot">
           <div><div class="pton">${fmt(p.poids_net)}</div></div>
-          ${p.price?`<div class="pcard-price">${p.price} €/T</div>`:'<div class="pcard-price-ask">Prix sur demande</div>'}
+          ${p.price?`<div class="pcard-price">${p.price} €/T</div>`:'<div class="pcard-price-ask">Prix Départ usine</div>'}
         </div>
       </div>
     </div>`;
