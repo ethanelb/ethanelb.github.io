@@ -1512,10 +1512,12 @@ document.addEventListener('click',e=>{
 
 function parseSearchQuery(raw){
   if(!raw)return{text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[],corrections:[]};
+  const STOP=new Set(['gramme','grammes','grammage','gms','millimetre','millimetres','laize','largeur','kg','kilo','tonne','tonnes','de','du','le','la','les','en','et','un','une']);
   const tokens=_norm(raw).split(/[\s,;/]+/).filter(Boolean);
   const res={text:[],gsm:null,width:null,formats:[],colors:[],qualityCodes:[],corrections:[]};
   for(const tok of tokens){
-    const nm=tok.match(/^(\d+)(g|gsm|gm2)?$/);
+    if(STOP.has(tok))continue;
+    const nm=tok.match(/^(\d+)(g|gsm|gm2|gm|gramme|grammes|gms)?$/);
     if(nm){const n=+nm[1];
       if(n>=20&&n<=800){res.gsm=n;continue;}
       if(n>800&&n<=3500){res.width=n;continue;}
