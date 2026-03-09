@@ -1211,7 +1211,8 @@ function rowToUi(r){
 }
 
 function goHome(){
-  location.href=location.pathname+'?v='+Date.now();
+  resetFilters();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 
