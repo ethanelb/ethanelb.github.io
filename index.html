@@ -545,10 +545,8 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
   }
   .filters-panel::-webkit-scrollbar{width:4px;}
   .filters-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-  /* Sidebar: msd panels in flow (not absolute) to avoid overflow clipping */
-  .filters-panel .msd-panel{position:static !important;width:100% !important;box-shadow:none;border:1px solid var(--border);margin-top:4px;max-height:220px;overflow-y:auto;}
-  .filters-panel .msd-panel:not(.show){display:none;}
-  .filters-panel .msd{position:static;}
+  /* Sidebar: type list always visible, no dropdown */
+  #sb-type-list .msd-option{font-size:12px;padding:6px 10px;}
   /* Content column */
   .body-wrap>div:last-child{
     padding:16px 0 0 24px;
@@ -756,10 +754,7 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:24px;}
       </div>
 
       <div class="fg"><label class="fl">Type<span class="fl-count" id="fl-count-type" style="display:none">0</span></label>
-        <div class="msd" id="msd-type-sidebar">
-          <button class="msd-btn" onclick="toggleMsd('msd-type-sidebar')"><span class="msd-btn-label">Tous</span><span class="msd-arrow">▾</span></button>
-          <div class="msd-panel"></div>
-        </div>
+        <div id="sb-type-list" style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r);margin-top:4px;"></div>
       </div>
       <div class="fg"><label class="fl">Grammage <span style="font-weight:400;font-size:11px;color:var(--gray)">(g/m²)</span></label>
         <div class="frow">
@@ -1247,7 +1242,8 @@ async function init(){
   // Hardcoded filter options — no DB query needed for these
   const typeVals=Object.keys(TYPE_MAP).sort((a,b)=>a.localeCompare(b));
   buildMsdOptions('msd-type',typeVals,'Tous');
-  buildMsdOptions('msd-type-sidebar',typeVals,'Tous',null,'msd-type');
+  const sbList=document.getElementById('sb-type-list');
+  if(sbList)sbList.innerHTML=typeVals.map(v=>`<div class="msd-option" data-val="${v}" onclick="toggleMsdOption(this,'msd-type')"><div class="msd-check"><svg width="9" height="7" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="1,4 3.5,6.5 8,1"/></svg></div>${v}</div>`).join('');
 
   buildMsdOptions('msd-couleur',
     ['Blanc','Brun','Ivoire','Gris','Noir','Vert','Rouge','Bleu','Jaune','Orange','Argent','Couleur','Divers'],
@@ -1363,6 +1359,7 @@ function getMsdValues(id) { return msdState[id]; }
 function resetMsd(id) {
   msdState[id].clear();
   document.querySelectorAll(`#${id} .msd-option`).forEach(o => o.classList.remove('selected'));
+  if(id==='msd-type')document.querySelectorAll('#sb-type-list .msd-option').forEach(o=>o.classList.remove('selected'));
   updateMsdBtn(id);
 }
 
