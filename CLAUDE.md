@@ -22,7 +22,7 @@ Site statique de catalogue papier/carton B2B. Déployé sur GitHub Pages.
 - **Project ref** : `bvcgpdoukhcatjibmvnb`
 - **URL** : `https://bvcgpdoukhcatjibmvnb.supabase.co`
 - **Anon key** : `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Y2dwZG91a2hjYXRqaWJtdm5iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNzg5MjgsImV4cCI6MjA4Nzg1NDkyOH0.Ip3ykSUS9sajTH04yXBerOG1haBKMD1kAvMQNjnGL1Q`
-- **Management token** : `sbp_d044e6944ea31b7e10183a7eb9b96b0d281696d3`
+- **Management token** : `sbp_8bbc7fb2723ae1f9fd33b8b3eed4fff4e7656a28`
 - **SQL endpoint** : `POST https://api.supabase.com/v1/projects/bvcgpdoukhcatjibmvnb/database/query`
 
 ### Tables principales
@@ -62,12 +62,32 @@ Site statique de catalogue papier/carton B2B. Déployé sur GitHub Pages.
 - `_viewMode` (`'grid'` | `'list'`) persiste entre les changements de page
 
 ## Règles photos / images produit
-- Les produits **FAB** (ref contient "FAB", emplacement contient "FABRICATION", zone = "FABRICATION SUR COMMANDE") doivent **toujours** afficher `img/fabrication-sur-demande.png`, même s'ils ont une `image_url` en base
-- La détection FAB ne doit **jamais** dépendre de `!p.image_url` — on teste uniquement ref/emplacement/zone
-- Les produits non-FAB sans `image_url` affichent `img/no-photo.png` (placeholder "Photos sur demande")
+
+### Priorité d'affichage (pour TOUS les produits)
+1. **Photo réelle** (`image_url`) → toujours en premier, quel que soit le type de produit
+2. **Fallback siderun** → `img/siderun-sur-demande.png` (bleu) si pas de photo ET produit siderun
+3. **Fallback fabrication** → `img/fabrication-sur-demande.png` (jaune) si pas de photo ET produit FAB
+4. **Fallback générique** → `img/no-photo.png` = `img/photos-sur-demande.png` (blanc) si pas de photo
+
+### Détection FAB
+Un produit est FAB si l'une de ces conditions est vraie :
+- `ref` commence par `Photo_FAB`
+- `details` commence par "fabrication" (mais PAS "calque fabrication" etc.)
+- `emplacement` contient "FAB" ou "DIRECT USINE"
+- `zone` ou `emplacement` = "FABRICATION SUR COMMANDE"
+
+### Détection Siderun
+Un produit est siderun si **les deux** conditions sont vraies :
+- `emplacement` = "OUR WAREHOUSE"
+- ET (ref contient "FAB" OU details contient "fabrication")
+
+### onerror (image cassée)
+- Si le lien `image_url` retourne 404, le `onerror` affiche le fallback approprié (siderun > fab > générique)
+- Les photos FAB sur `stock.prodi.net` retournent toujours 404 (n'existent pas)
+
+### Import
 - Les `image_url` viennent des **hyperlinks** dans les fichiers Excel (pattern : `https://stock.prodi.net/albums/photo/{ref}.jpg`)
 - Quand on importe des produits depuis les Excel, **toujours extraire les hyperlinks** de la colonne A pour remplir `image_url`
-- `onerror` sur les images renvoie vers `img/no-photo.png` en cas de lien cassé
 
 ## Déploiement
 - Push sur `main` → GitHub Actions → GitHub Pages (automatique, ~30s)
