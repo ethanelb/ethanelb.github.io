@@ -46,9 +46,13 @@ DROP POLICY IF EXISTS "proforma_requests_auth_read"   ON proforma_requests;
 CREATE POLICY "proforma_requests_anon_insert" ON proforma_requests
   FOR INSERT TO anon
   WITH CHECK (
-    length(coalesce(nom,''))        <= 100
-    AND length(coalesce(message,'')) <= 2000
-    AND length(coalesce(telephone,''))<= 30
+    length(coalesce(nom,''))                  <= 100
+    AND length(coalesce(message,''))          <= 2000
+    AND length(coalesce(telephone,''))        <= 30
+    AND length(coalesce(email,''))            <= 200
+    AND length(coalesce(societe,''))          <= 200
+    AND length(coalesce(statut,''))           <= 50
+    AND length(coalesce(quantite_souhaitee,'')) <= 200
   );
 
 -- Lecture interdite côté anon ; côté authenticated (équipe commerciale) — full read
@@ -83,8 +87,9 @@ DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
     -- Supprime tâche existante si déjà programmée (idempotent)
-    PERFORM cron.unschedule('purge-shared-carts')
-      WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'purge-shared-carts');
+    IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'purge-shared-carts') THEN
+      PERFORM cron.unschedule('purge-shared-carts');
+    END IF;
     PERFORM cron.schedule(
       'purge-shared-carts',
       '0 3 * * *',
