@@ -72,6 +72,9 @@ CREATE POLICY "shared_carts_anon_insert" ON shared_carts
   WITH CHECK (
     length(code)            BETWEEN 4 AND 16
     AND length(cart_ids)    <= 5000
+    -- cart_ids is a comma-separated list of product IDs (numeric only).
+    -- Reject anything else to prevent storage pollution.
+    AND cart_ids ~ '^[0-9]+(,[0-9]+)*$'
   );
 
 -- ─── 4. shared_carts — expiration & purge (Faille #8) ───────────────────────
