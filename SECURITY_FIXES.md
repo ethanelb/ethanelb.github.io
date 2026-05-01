@@ -1,9 +1,10 @@
 # Prodiconseil — Suivi des correctifs sécurité
 
-Audit : 10 failles dans `SECURITY_FIX_PROMPT.md` + 2 secrets additionnels découverts.
+Audit : 10 failles initiales + 2 secrets bonus + 5 trous identifiés post-fix par audit-review.
 Démarrage : 2026-05-01.
+Dernière révision : 2026-05-01 14h30 CEST (RLS appliquées en live, audit complet terminé).
 
-Statut global : 🟡 7 failles fixées localement / 3 dépendent d'actions user / 1 en attente choix.
+**Statut global : 🟢 100% des fixes code shippés (commits 46d4de41 → fc8e62ef → fbcfc5a1). RLS Supabase appliquées en live et validées via curl. 3 actions externes (EmailJS dashboard, git filter-repo, RGPD) à faire par user.**
 
 ## Légende
 - ✅ Corrigé localement (commit en attente validation)
@@ -43,28 +44,47 @@ Statut global : 🟡 7 failles fixées localement / 3 dépendent d'actions user 
 
 ---
 
-## Faille #1 — Token Supabase Management exposé ✅
+## Faille #1 — Token Supabase Management exposé ✅ (rotation validée en CI)
 
 - ✅ `scripts/import_stock_auto.py:26` → `os.environ["SUPABASE_MGMT_TOKEN"]`
 - ✅ `scripts/import_stock_auto.py:21` (bonus — Gmail App Password) → `os.environ["IMAP_PASS"]`
 - ✅ `scripts/verify_photos.py:15` → `os.environ["SUPABASE_MGMT_TOKEN"]`
 - ✅ `CLAUDE.md:25` → `***RÉVOQUÉ — voir secret GitHub Actions***`
-- 🔴 User : générer nouveau token Supabase + GitHub Secret `SUPABASE_MGMT_TOKEN` (cf. ci-dessus)
+- ✅ User a généré un nouveau token + posé en GitHub Secret `SUPABASE_MGMT_TOKEN` (rotated 2026-05-01T11:10:57Z)
+- ✅ CI workflow re-run validé (1m45s success avec le nouveau token)
+- 🟠 Token temporaire `claude-session-2026-05-01` (utilisé pour appliquer les SQL en live) à révoquer côté user (https://supabase.com/dashboard/account/tokens)
 
 ---
 
-## Faille #2 — admin.html sans auth + RLS ✅ (Option B retenue)
+## Faille #2 — admin.html sans auth + RLS ✅ (Option B + RLS appliquées en live)
 
-- ✅ `admin.html` → renommé en `admin.local.html` (déjà dans .gitignore)
-- ✅ Le fichier n'est plus déployé sur GitHub Pages : `paper.prodi.com/admin.html` retournera 404 après push
-- ✅ Pour usage admin local : ouvrir `admin.local.html` via `python3 -m http.server 8000` localement
-- ⚠️ **Note d'usage** : une fois `supabase_security_harden.sql` exécuté, les écritures via clé anon seront bloquées (RLS). L'`admin.local.html` ne pourra donc plus écrire en base. Pour les modifs ponctuelles → passer par le **dashboard Supabase web** (Table Editor). Si besoin d'un admin web protégé plus tard → revenir à Option A (auth Supabase).
-- ✅ SQL prêt :
-  - `supabase_security_audit.sql` : à exécuter pour voir les policies actuelles
-  - `supabase_security_harden.sql` : RLS de durcissement
-    - `products` : SELECT public ; INSERT/UPDATE/DELETE → `authenticated` uniquement
-    - `proforma_requests` : INSERT public avec limites longueur
-    - `shared_carts` : SELECT public + INSERT borné + expiration 90j + purge cron
+- ✅ `admin.html` → renommé `admin.local.html` (gitignored, retiré du déploiement public)
+- ✅ `paper.prodi.com/admin.html` → 404 après deploy
+- ✅ Pour usage admin : ouvrir `admin.local.html` via `python3 -m http.server 8000` localement
+- ✅ **RLS appliquées sur les 3 tables le 2026-05-01** via management API :
+  - `products` : RLS ON, `products_anon_select` (SELECT anon) + `products_auth_write` (ALL authenticated). État avant : RLS désactivé → n'importe qui pouvait écrire (test curl confirmé sur ligne id=183799 que j'ai créée puis supprimée).
+  - `proforma_requests` : **table créée** (n'existait pas avant !), RLS ON, INSERT borné en longueur, SELECT/UPDATE pour `authenticated`.
+  - `shared_carts` : RLS ON, INSERT borné (regex `cart_ids ~ '^[0-9]+(,[0-9]+)*$'` + length checks), SELECT seulement si non-expiré (`expires_at IS NULL OR expires_at > now()`).
+- ✅ Colonne `expires_at timestamptz DEFAULT now() + interval '90 days'` ajoutée à `shared_carts` + index.
+- ✅ Job `pg_cron` `purge-shared-carts` programmé : `0 3 * * *` (3h UTC chaque jour) → `DELETE FROM shared_carts WHERE expires_at < now()`.
+
+### Tests RLS via curl (clé anon publique, 2026-05-01)
+
+| Test | Résultat |
+|---|---|
+| `SELECT products` | 200 ✅ (lecture publique) |
+| `POST products` (anon) | **401 row violates RLS** ✅ (avant : 201 — trou béant fermé) |
+| `POST proforma_requests` valide | 201 ✅ |
+| `POST proforma_requests` message > 2000 chars | **401 RLS violation** ✅ |
+| `POST shared_carts` `cart_ids="<script>"` | **401 RLS violation** ✅ |
+| `POST shared_carts` `cart_ids="183741"` | 201 ✅ |
+
+### ⚠️ Découverte critique pendant l'application
+
+La table `proforma_requests` **n'existait pas** avant le 2026-05-01. Conséquence : depuis la mise en service du site, toutes les demandes de devis envoyées par le formulaire de **contact en bas de vitrine** (`submitContact` dans vitrine.js) étaient **silencieusement perdues** — le code a un `.catch(()=>{})` qui masque l'erreur, et ce flow n'a pas de fallback EmailJS contrairement aux flows du catalogue. Les leads venant de cette voie sont définitivement perdus pour la période d'avant le 2026-05-01.
+
+### Note d'usage admin
+`admin.local.html` ne pourra plus écrire en base depuis la clé anon (RLS bloque). Pour les modifs ponctuelles : **dashboard Supabase web** (Table Editor). Si besoin d'un admin web protégé plus tard → Option A (auth Supabase email/password) à implémenter.
 
 ---
 
