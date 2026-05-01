@@ -22,7 +22,7 @@ Site statique de catalogue papier/carton B2B. Déployé sur GitHub Pages.
 - **Project ref** : `bvcgpdoukhcatjibmvnb`
 - **URL** : `https://bvcgpdoukhcatjibmvnb.supabase.co`
 - **Anon key** : `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2Y2dwZG91a2hjYXRqaWJtdm5iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNzg5MjgsImV4cCI6MjA4Nzg1NDkyOH0.Ip3ykSUS9sajTH04yXBerOG1haBKMD1kAvMQNjnGL1Q`
-- **Management token** : `sbp_8bbc7fb2723ae1f9fd33b8b3eed4fff4e7656a28`
+- **Management token** : ***RÉVOQUÉ — voir secret GitHub Actions `SUPABASE_MGMT_TOKEN`***
 - **SQL endpoint** : `POST https://api.supabase.com/v1/projects/bvcgpdoukhcatjibmvnb/database/query`
 
 ### Tables principales
